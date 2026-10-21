@@ -74,7 +74,7 @@
   <div class="garland garland-top" v-html="vines.top"></div>
 
   <!-- Floating navigation (appears on scroll) -->
-  <nav class="float-nav glass flex items-center gap-6" :class="{ 'is-on': scrolled }" aria-label="Quick navigation">
+  <nav class="float-nav glass flex items-center gap-6" :class="{ 'is-on': scrolled && calendarFor !== 'hero' }" aria-label="Quick navigation">
     <a href="#top" class="brand !text-base mr-auto">
       <img src="images/logo-64.png" alt="" class="w-8 h-8">
       Coorg River Rest
@@ -109,15 +109,20 @@
           <h1 class="title-display">Fall asleep to the river. Wake up to the <span class="em">hills.</span></h1>
           <p class="lead max-w-[46ch]">A peaceful escape among Coorg’s sprawling coffee estates, where a flowing river wraps around the property, misty hills wait outside your door and every stay comes with warm Coorgi hospitality.</p>
 
-          <form class="glass rounded-2xl p-4 mt-2 flex flex-col gap-4 max-w-[600px]" @submit.prevent="openEnquiry()">
+          <div ref="heroCal" class="relative mt-2 max-w-[600px]">
+          <form class="glass rounded-2xl p-4 flex flex-col gap-4" @submit.prevent="openEnquiry()">
             <div class="grid grid-cols-2 sm:grid-cols-[1fr_1fr_128px] gap-3 items-end">
               <div class="field">
-                <label for="ci">Check-in</label>
-                <input id="ci" class="input" type="date" v-model="booking.checkIn" :min="minDate">
+                <span class="label" id="ci-label">Check-in</span>
+                <button type="button" class="input date-btn" :class="{ 'is-active': calendarFor === 'hero' && calField === 'in' }" :aria-label="'Check-in date: ' + (booking.checkIn ? fmtField(booking.checkIn) : 'not chosen')" aria-haspopup="dialog" :aria-expanded="calendarFor === 'hero' ? 'true' : 'false'" @click="openCalendar('hero', 'in')">
+                  <ui-icon name="calendar" :size="16"></ui-icon><span v-if="booking.checkIn">{{ fmtField(booking.checkIn) }}</span><span v-else class="text-muted">Add date</span>
+                </button>
               </div>
               <div class="field">
-                <label for="co">Check-out</label>
-                <input id="co" class="input" type="date" v-model="booking.checkOut" :min="minCheckOut">
+                <span class="label" id="co-label">Check-out</span>
+                <button type="button" class="input date-btn" :class="{ 'is-active': calendarFor === 'hero' && calField === 'out' }" :aria-label="'Check-out date: ' + (booking.checkOut ? fmtField(booking.checkOut) : 'not chosen')" aria-haspopup="dialog" :aria-expanded="calendarFor === 'hero' ? 'true' : 'false'" @click="openCalendar('hero', 'out')">
+                  <ui-icon name="calendar" :size="16"></ui-icon><span v-if="booking.checkOut">{{ fmtField(booking.checkOut) }}</span><span v-else class="text-muted">Add date</span>
+                </button>
               </div>
               <div class="field col-span-2 sm:col-span-1">
                 <span class="label" id="guests-label">Guests</span>
@@ -133,6 +138,19 @@
               <button type="submit" class="btn btn-primary w-full sm:w-auto">Check availability <ui-icon name="arrow-right" :size="16"></ui-icon></button>
             </div>
           </form>
+          <teleport to="body" :disabled="vw >= 640">
+          <template v-if="calendarFor === 'hero'">
+            <div class="cal-scrim" @click="closeCalendar"></div>
+            <div ref="heroPop" class="cal-pop" :class="calMonths === 2 ? 'two' : 'one'" role="dialog" aria-label="Choose your dates">
+              <div class="cal-sheet-head">
+                <span class="text-[17px] font-medium">Choose your dates</span>
+                <button type="button" class="btn btn-icon !w-9 !h-9" aria-label="Close calendar" @click="closeCalendar"><ui-icon name="close" :size="16"></ui-icon></button>
+              </div>
+              <range-calendar :check-in="booking.checkIn" :check-out="booking.checkOut" :field="calField" :months="calMonths" @pick="setDates" @done="closeCalendar" @close="closeCalendar"></range-calendar>
+            </div>
+          </template>
+          </teleport>
+          </div>
         </div>
 
         <div class="relative h-[420px] sm:h-[520px] lg:h-[620px] rise" style="animation-delay:120ms">
@@ -495,7 +513,7 @@
   <div class="garland garland-bottom" v-html="vines.bottom"></div>
 
   <!-- Floating WhatsApp button -->
-  <button v-show="scrolled && !dialogOpen && !menuOpen && lb < 0" class="wa-fab" aria-label="Enquire on WhatsApp" @click="openEnquiry()"><ui-icon name="whatsapp" :size="28"></ui-icon></button>
+  <button v-show="scrolled && !dialogOpen && !menuOpen && lb < 0 && !calendarFor" class="wa-fab" aria-label="Enquire on WhatsApp" @click="openEnquiry()"><ui-icon name="whatsapp" :size="28"></ui-icon></button>
 
   <!-- Mobile menu -->
   <div v-if="menuOpen" class="menu-sheet" role="dialog" aria-modal="true" aria-label="Menu">
@@ -532,12 +550,19 @@
             <input id="enq-name" ref="nameInput" class="input" type="text" v-model.trim="booking.name" autocomplete="name" placeholder="Full name">
           </div>
           <div class="field">
-            <label for="enq-ci">Check-in</label>
-            <input id="enq-ci" class="input" type="date" v-model="booking.checkIn" :min="minDate">
+            <span class="label" id="enq-ci-label">Check-in</span>
+            <button type="button" class="input date-btn" :class="{ 'is-active': calendarFor === 'dialog' && calField === 'in' }" :aria-label="'Check-in date: ' + (booking.checkIn ? fmtField(booking.checkIn) : 'not chosen')" aria-haspopup="dialog" :aria-expanded="calendarFor === 'dialog' ? 'true' : 'false'" @click="openCalendar('dialog', 'in')">
+              <ui-icon name="calendar" :size="16"></ui-icon><span v-if="booking.checkIn">{{ fmtField(booking.checkIn) }}</span><span v-else class="text-muted">Add date</span>
+            </button>
           </div>
           <div class="field">
-            <label for="enq-co">Check-out</label>
-            <input id="enq-co" class="input" type="date" v-model="booking.checkOut" :min="minCheckOut">
+            <span class="label" id="enq-co-label">Check-out</span>
+            <button type="button" class="input date-btn" :class="{ 'is-active': calendarFor === 'dialog' && calField === 'out' }" :aria-label="'Check-out date: ' + (booking.checkOut ? fmtField(booking.checkOut) : 'not chosen')" aria-haspopup="dialog" :aria-expanded="calendarFor === 'dialog' ? 'true' : 'false'" @click="openCalendar('dialog', 'out')">
+              <ui-icon name="calendar" :size="16"></ui-icon><span v-if="booking.checkOut">{{ fmtField(booking.checkOut) }}</span><span v-else class="text-muted">Add date</span>
+            </button>
+          </div>
+          <div v-if="calendarFor === 'dialog'" class="cal-inline col-span-2">
+            <range-calendar :check-in="booking.checkIn" :check-out="booking.checkOut" :field="calField" :months="calMonths" @pick="setDates" @done="closeCalendar" @close="closeCalendar"></range-calendar>
           </div>
           <div class="field">
             <span class="label" id="enq-guests">Guests</span>

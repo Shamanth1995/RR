@@ -58,6 +58,137 @@
   const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d); };
   const fmtShort = (s) => parse(s).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
   const fmtLong = (s) => parse(s).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const fmtField = (s) => parse(s).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+
+  /* --- Date-range calendar --------------------------------------------------
+     Pick a check-in day, then a check-out day. Emits `pick` with both dates
+     after every click, and `done` once a check-out date is chosen.
+     Arrow keys move between days; Escape closes.
+  -------------------------------------------------------------------------- */
+  const WEEKDAYS = [['S', 'Sunday'], ['M', 'Monday'], ['T', 'Tuesday'], ['W', 'Wednesday'], ['T', 'Thursday'], ['F', 'Friday'], ['S', 'Saturday']];
+  const RangeCalendar = {
+    props: {
+      checkIn: { type: String, default: '' },
+      checkOut: { type: String, default: '' },
+      field: { type: String, default: 'in' },
+      months: { type: Number, default: 1 },
+    },
+    emits: ['pick', 'done', 'close'],
+    setup(props, { emit }) {
+      const today = iso(new Date());
+      const maxIso = addDays(today, 540);
+      const phase = ref(props.field);
+      watch(() => props.field, (v) => { phase.value = v; });
+      const start = parse(props.checkIn || today);
+      const view = ref({ y: start.getFullYear(), m: start.getMonth() });
+      const hover = ref('');
+      const focusIso = ref(props.field === 'out' ? (props.checkOut || addDays(props.checkIn || today, 1)) : (props.checkIn || today));
+      const root = ref(null);
+
+      const monthKey = (y, m) => y * 12 + m;
+      const t0 = parse(today), tMax = parse(maxIso);
+      const viewKey = computed(() => monthKey(view.value.y, view.value.m));
+      const canPrev = computed(() => viewKey.value > monthKey(t0.getFullYear(), t0.getMonth()));
+      const canNext = computed(() => viewKey.value + props.months - 1 < monthKey(tMax.getFullYear(), tMax.getMonth()));
+      const shift = (k) => { const d = new Date(view.value.y, view.value.m + k, 1); view.value = { y: d.getFullYear(), m: d.getMonth() }; };
+
+      const rangeEnd = computed(() => props.checkOut || (phase.value === 'out' && props.checkIn && hover.value > props.checkIn ? hover.value : ''));
+      const grid = computed(() => {
+        const list = [];
+        for (let k = 0; k < props.months; k++) {
+          const first = new Date(view.value.y, view.value.m + k, 1);
+          const y = first.getFullYear(), m = first.getMonth(), lead = first.getDay();
+          const days = new Date(y, m + 1, 0).getDate();
+          const s0 = props.checkIn, e0 = rangeEnd.value;
+          const cells = [];
+          for (let b = 0; b < lead; b++) cells.push({ key: 'b' + b, blank: true });
+          for (let d = 1; d <= days; d++) {
+            const id = `${y}-${pad(m + 1)}-${pad(d)}`;
+            const col = (lead + d - 1) % 7;
+            cells.push({
+              key: id, iso: id, d, blank: false, col,
+              disabled: id < today || id > maxIso,
+              today: id === today,
+              sel: id === s0 || id === e0,
+              inRange: !!(s0 && e0 && id > s0 && id < e0),
+              bandStart: !!(s0 && e0 && id === s0),
+              bandEnd: !!(s0 && e0 && id === e0),
+              label: parse(id).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+            });
+          }
+          list.push({ key: y + '-' + m, label: first.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }), cells });
+        }
+        return list;
+      });
+      const tabIso = computed(() => {
+        const days = grid.value.flatMap((mo) => mo.cells).filter((c) => !c.blank && !c.disabled);
+        return (days.find((c) => c.iso === focusIso.value) || days[0] || {}).iso;
+      });
+
+      function pick(c) {
+        if (c.disabled) return;
+        focusIso.value = c.iso;
+        if (phase.value === 'in' || !props.checkIn || c.iso <= props.checkIn) {
+          const keepOut = props.checkOut && props.checkOut > c.iso ? props.checkOut : '';
+          emit('pick', { checkIn: c.iso, checkOut: keepOut });
+          phase.value = 'out';
+        } else {
+          emit('pick', { checkIn: props.checkIn, checkOut: c.iso });
+          hover.value = '';
+          emit('done');
+        }
+      }
+      const nights = computed(() => (props.checkIn && props.checkOut ? Math.round((parse(props.checkOut) - parse(props.checkIn)) / 864e5) : 0));
+      const status = computed(() => {
+        if (phase.value === 'out' && !props.checkOut) return 'Now choose your check-out date';
+        if (phase.value === 'in') return 'Choose your check-in date';
+        return `${nights.value} ${nights.value === 1 ? 'night' : 'nights'} · ${fmtShort(props.checkIn)} – ${fmtShort(props.checkOut)}`;
+      });
+      const focusDay = (id, opts) => nextTick(() => {
+        const b = root.value && root.value.querySelector('[data-iso="' + id + '"]');
+        if (b) b.focus(opts);
+      });
+      function onKey(e) {
+        if (e.key === 'Escape') { e.stopPropagation(); emit('close'); return; }
+        const steps = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+        const from = e.target && e.target.dataset && e.target.dataset.iso;
+        if (!from || !(e.key in steps)) return;
+        e.preventDefault();
+        let to = addDays(from, steps[e.key]);
+        if (to < today) to = today;
+        if (to > maxIso) to = maxIso;
+        const td = parse(to), k = monthKey(td.getFullYear(), td.getMonth());
+        if (k < viewKey.value) shift(k - viewKey.value);
+        else if (k > viewKey.value + props.months - 1) shift(k - (viewKey.value + props.months - 1));
+        focusIso.value = to;
+        focusDay(to);
+      }
+      onMounted(() => focusDay(tabIso.value, { preventScroll: true }));
+      return { root, grid, weekdays: WEEKDAYS, canPrev, canNext, shift, hover, tabIso, pick, status, onKey };
+    },
+    template: `
+      <div ref="root" class="cal" @keydown="onKey">
+        <div class="cal-months" :style="{ gridTemplateColumns: 'repeat(' + months + ', minmax(0, 1fr))' }" @mouseleave="hover = ''">
+          <div v-for="(mo, mi) in grid" :key="mo.key" class="cal-month">
+            <div class="cal-head">
+              <button type="button" class="cal-nav" :class="{ 'is-hidden': mi !== 0 }" :disabled="!canPrev" aria-label="Previous month" @click="shift(-1)"><ui-icon name="arrow-left" :size="16"></ui-icon></button>
+              <span class="cal-title" aria-live="polite">{{ mo.label }}</span>
+              <button type="button" class="cal-nav" :class="{ 'is-hidden': mi !== grid.length - 1 }" :disabled="!canNext" aria-label="Next month" @click="shift(1)"><ui-icon name="arrow-right" :size="16"></ui-icon></button>
+            </div>
+            <div class="cal-grid">
+              <span v-for="w in weekdays" :key="w[1]" class="cal-wd" :title="w[1]" aria-hidden="true">{{ w[0] }}</span>
+              <div v-for="c in mo.cells" :key="c.key" class="cal-cell" :class="{ 'in-range': c.inRange, 'band-start': c.bandStart, 'band-end': c.bandEnd, 'row-start': c.col === 0, 'row-end': c.col === 6 }">
+                <button v-if="!c.blank" type="button" class="cal-day" :class="{ 'is-sel': c.sel, 'is-today': c.today }" :disabled="c.disabled" :data-iso="c.iso" :tabindex="c.iso === tabIso ? 0 : -1" :aria-label="c.label" :aria-pressed="c.sel ? 'true' : 'false'" @click="pick(c)" @mouseenter="hover = c.iso" @focus="hover = c.iso">{{ c.d }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cal-foot">
+          <span class="cal-status" aria-live="polite">{{ status }}</span>
+          <button type="button" class="btn btn-primary btn-sm" :disabled="!checkOut" @click="$emit('done')">Done</button>
+        </div>
+      </div>`,
+  };
 
   /* --- Fireflies for the dark band ---------------------------------------- */
   function fireflies(n = 46, seed = 11) {
@@ -143,26 +274,48 @@
       /* booking */
       const today = iso(new Date());
       const booking = reactive({ checkIn: addDays(today, 7), checkOut: addDays(today, 9), guests: 2, room: '', name: '', message: '' });
-      const minDate = today;
-      const minCheckOut = computed(() => addDays(booking.checkIn || today, 1));
-      watch(() => booking.checkIn, (ci) => {
-        if (!ci) return;
-        if (ci < today) booking.checkIn = today;
+      const nights = computed(() => (booking.checkIn && booking.checkOut ? Math.max(1, Math.round((parse(booking.checkOut) - parse(booking.checkIn)) / 864e5)) : 0));
+      const nightsLabel = computed(() => (nights.value ? `${nights.value} ${nights.value === 1 ? 'night' : 'nights'}` : 'Choose dates'));
+      const dateRange = computed(() => `${booking.checkIn ? fmtShort(booking.checkIn) : '…'} – ${booking.checkOut ? fmtShort(booking.checkOut) : '…'}`);
+
+      /* calendar: '' (closed), 'hero' (under the booking bar) or 'dialog' (inside the enquiry form) */
+      const calendarFor = ref('');
+      const calField = ref('in');
+      const heroCal = ref(null);
+      const heroPop = ref(null);
+      const vw = ref(window.innerWidth);
+      const calMonths = computed(() => (calendarFor.value === 'dialog' ? (vw.value >= 640 ? 2 : 1) : (vw.value >= 768 ? 2 : 1)));
+      let calSnap = null;
+      function openCalendar(where, field) {
+        if (calendarFor.value === where && calField.value === field) { closeCalendar(); return; }
+        if (!calendarFor.value) calSnap = { checkIn: booking.checkIn, checkOut: booking.checkOut };
+        calendarFor.value = where;
+        calField.value = field;
+        if (where === 'dialog') nextTick(() => setTimeout(() => {
+          const el = document.querySelector('.cal-inline');
+          if (el) el.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+        }, 30));
+      }
+      function setDates(v) { booking.checkIn = v.checkIn; booking.checkOut = v.checkOut; }
+      function closeCalendar() {
+        if (!booking.checkIn && calSnap) { booking.checkIn = calSnap.checkIn; booking.checkOut = calSnap.checkOut; }
         if (!booking.checkOut || booking.checkOut <= booking.checkIn) booking.checkOut = addDays(booking.checkIn, 1);
-      });
-      watch(() => booking.checkOut, (co) => {
-        if (co && booking.checkIn && co <= booking.checkIn) booking.checkOut = addDays(booking.checkIn, 1);
-      });
-      const nights = computed(() => Math.max(1, Math.round((parse(booking.checkOut) - parse(booking.checkIn)) / 864e5) || 1));
-      const nightsLabel = computed(() => `${nights.value} ${nights.value === 1 ? 'night' : 'nights'}`);
-      const dateRange = computed(() => `${fmtShort(booking.checkIn)} – ${fmtShort(booking.checkOut)}`);
+        calendarFor.value = '';
+        calSnap = null;
+      }
+      const onDocDown = (e) => {
+        if (calendarFor.value !== 'hero') return;
+        const inside = (heroCal.value && heroCal.value.contains(e.target)) || (heroPop.value && heroPop.value.contains(e.target));
+        if (!inside) closeCalendar();
+      };
+      const onResize = () => { vw.value = window.innerWidth; };
       const roomName = computed(() => ([...rooms, dorm].find((r) => r.id === booking.room) || {}).name || 'No preference');
 
       const enquiryText = computed(() => {
         const lines = [`Hello ${config.name || 'Coorg River Rest'}! I’d like to enquire about a stay.`, ''];
         if (booking.name) lines.push(`Name: ${booking.name}`);
-        lines.push(`Check-in: ${fmtLong(booking.checkIn)}`);
-        lines.push(`Check-out: ${fmtLong(booking.checkOut)} (${nightsLabel.value})`);
+        if (booking.checkIn) lines.push(`Check-in: ${fmtLong(booking.checkIn)}`);
+        if (booking.checkOut) lines.push(`Check-out: ${fmtLong(booking.checkOut)} (${nightsLabel.value})`);
         lines.push(`Guests: ${booking.guests}`);
         lines.push(`Room: ${roomName.value}`);
         if (booking.message.trim()) lines.push('', booking.message.trim());
@@ -196,6 +349,7 @@
 
       let lastFocus = null;
       function openEnquiry(roomId, phoneIdx) {
+        if (calendarFor.value) closeCalendar();
         if (typeof roomId === 'string') booking.room = roomId;
         if (typeof phoneIdx === 'number' && phones[phoneIdx]) waIndex.value = phoneIdx;
         lastFocus = document.activeElement;
@@ -203,6 +357,7 @@
         nextTick(() => nameInput.value && nameInput.value.focus());
       }
       function closeEnquiry() {
+        if (calendarFor.value) closeCalendar();
         dialogOpen.value = false;
         if (lastFocus && lastFocus.focus) lastFocus.focus();
       }
@@ -224,8 +379,9 @@
       const onLbTouchEnd = (e) => { const d = swipeDir(e); if (d) lbStep(d); };
 
       /* scroll lock while an overlay is open */
-      watch([dialogOpen, menuOpen, lb], ([d, m, l]) => {
-        document.documentElement.style.overflow = d || m || l >= 0 ? 'hidden' : '';
+      watch([dialogOpen, menuOpen, lb, calendarFor, vw], ([d, m, l, c, w]) => {
+        const sheet = c === 'hero' && w < 640;
+        document.documentElement.style.overflow = d || m || l >= 0 || sheet ? 'hidden' : '';
       });
 
       /* page chrome */
@@ -233,6 +389,10 @@
       const active = ref('');
       const onScroll = () => { scrolled.value = window.scrollY > 560; };
       const onKey = (e) => {
+        if (calendarFor.value) {
+          if (e.key === 'Escape') closeCalendar();
+          return;
+        }
         if (e.key === 'Escape') {
           if (lb.value >= 0) lb.value = -1;
           else if (dialogOpen.value) closeEnquiry();
@@ -259,7 +419,9 @@
       onMounted(() => {
         window.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('keydown', onKey);
+        window.addEventListener('resize', onResize, { passive: true });
         document.addEventListener('visibilitychange', onVisibility);
+        document.addEventListener('pointerdown', onDocDown);
         onScroll();
 
         if ('IntersectionObserver' in window) {
@@ -279,7 +441,9 @@
       onBeforeUnmount(() => {
         window.removeEventListener('scroll', onScroll);
         window.removeEventListener('keydown', onKey);
+        window.removeEventListener('resize', onResize);
         document.removeEventListener('visibilitychange', onVisibility);
+        document.removeEventListener('pointerdown', onDocDown);
         revealObs && revealObs.disconnect();
         sectionObs && sectionObs.disconnect();
       });
@@ -291,7 +455,8 @@
         mapEmbed, directionsUrl, coords, directions,
         year: new Date().getFullYear(),
         idx, hover, autoplay, go, next, prev, counter, carouselPaused,
-        booking, minDate, minCheckOut, nightsLabel, dateRange,
+        booking, nightsLabel, dateRange, fmtField,
+        calendarFor, calField, calMonths, heroCal, heroPop, vw, openCalendar, closeCalendar, setDates,
         isMobile, waIndex, wa,
         dialogOpen, menuOpen, nameInput, openEnquiry, closeEnquiry,
         lb, openLightbox, openLightboxById, openLightboxBySrc, lbStep,
@@ -302,5 +467,6 @@
   });
 
   app.component('ui-icon', UiIcon);
+  app.component('range-calendar', RangeCalendar);
   app.mount('#app');
 })();

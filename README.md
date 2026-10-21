@@ -36,6 +36,9 @@ images/           photos (full size) and images/thumbs/ (small versions)
   - On a phone: **Send on WhatsApp** opens the WhatsApp app.
   - On a laptop or desktop: **Send via WhatsApp Web** opens web.whatsapp.com,
     and **Open WhatsApp app** hands over to the desktop app.
+- **Dates** are picked from a calendar: tap Check-in, choose the arrival day,
+  then the departure day. It shows two months on wider screens and slides up
+  from the bottom on phones (the `RangeCalendar` component in `js/app.js`).
 - `lat` / `lng` place the map pin and the "Get directions" link; `mapsUrl` is
   the "Open in Google Maps" link; `address` is the text shown under the logo.
 - Room names and descriptions are in `window.ROOMS` (written from the photos,
