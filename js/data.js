@@ -4,21 +4,26 @@
    ========================================================================== */
 
 /* --- Contact details --------------------------------------------------------
-   Fill these in and the page picks them up everywhere (header, enquiry form,
-   footer). Leave a value as '' to hide it.
-   whatsapp: digits only, with country code, e.g. '919876543210'
-   phone:    as you want it shown, e.g. '+91 98765 43210'
-   mapsUrl:  a Google Maps share link to the property
+   Used everywhere on the page (header, enquiry form, location, footer).
+   phones: `display` is how the number is shown; `number` is digits only with
+           the country code (91 for India). Enquiries go to the first number
+           unless the guest picks the other one.
+   lat/lng: the map pin; mapsUrl: the "Open in Google Maps" link.
+   Leave email or instagram as '' to hide them.
 ---------------------------------------------------------------------------- */
 window.CONFIG = {
   name: 'Coorg River Rest',
   location: 'Coorg, Karnataka',
-  whatsapp: '',
-  phone: '',
+  address: 'Near Brahmagiri Sports Club\nKodagu (Coorg), Karnataka',
+  phones: [
+    { display: '+91 84312 46215', number: '918431246215' },
+    { display: '+91 77603 55115', number: '917760355115' },
+  ],
   email: '',
-  address: '',
-  mapsUrl: '',
   instagram: '',
+  mapsUrl: 'https://maps.google.com/maps/search/Brahmagiri%20Sports%20Club/@11.991714477539062,76.0103530883789,17z?hl=en',
+  lat: 11.991714477539062,
+  lng: 76.0103530883789,
 };
 
 /* --- Rooms (carousel) ------------------------------------------------------ */
@@ -33,8 +38,8 @@ window.ROOMS = [
       'A wide picture window frames the forested hills. Pull the two chairs up to the live-edge wooden table and take your morning coffee with the whole valley in view.',
     facts: [
       { k: 'Bed', v: 'Double' },
+      { k: 'Balcony', v: 'Hill view' },
       { k: 'Floor', v: 'Wooden' },
-      { k: 'Outlook', v: 'Valley & hills' },
     ],
     features: ['Picture window', 'Sitting corner', 'Private bathroom'],
   },
@@ -48,8 +53,8 @@ window.ROOMS = [
       'Brick-textured walls in deep laterite red sit under a sloping timber ceiling. A sitting nook by the window opens onto the treetops, and the kettle is always within reach.',
     facts: [
       { k: 'Bed', v: 'Double' },
+      { k: 'Balcony', v: 'Hill view' },
       { k: 'Ceiling', v: 'Vaulted timber' },
-      { k: 'Outlook', v: 'Garden & trees' },
     ],
     features: ['Window nook', 'Tea & coffee kettle', 'Wall fan'],
   },
@@ -63,12 +68,18 @@ window.ROOMS = [
       'Warm terracotta walls, reading lamps on either side of a wide double bed and soft teal linen. A quiet room to come back to after a day out in the hills.',
     facts: [
       { k: 'Bed', v: 'Double' },
-      { k: 'Floor', v: 'Wooden' },
+      { k: 'Balcony', v: 'Hill view' },
       { k: 'Light', v: 'Reading lamps' },
     ],
     features: ['Tea & coffee kettle', 'Dressing mirror', 'Wall fan'],
   },
 ];
+
+window.DORM = {
+  id: 'dorm',
+  name: 'Dormitory',
+  body: 'For groups of friends and families travelling together, with its own hill-view balcony just like the rooms.',
+};
 
 window.BATHS = [
   { img: 'images/bath-leaf.jpg', thumb: 'images/thumbs/bath-leaf.jpg', alt: 'Tiled bathroom with a leaf-pattern feature wall, shower and fresh towels' },
@@ -77,7 +88,7 @@ window.BATHS = [
 
 /* --- Services --------------------------------------------------------------- */
 window.SERVICES = [
-  { id: 'campfire', kicker: 'After dark', title: 'Campfire', body: 'Gather round the fire once the sun drops behind the hills, with the river for company.' },
+  { id: 'campfire', kicker: 'After dark', title: 'Campfire', img: 'images/campfire.jpg', alt: 'A round laterite fire pit burning under a tiled-roof shelter at night', body: 'Gather round the fire pit in our covered, laterite-walled campfire corner once the sun drops behind the hills.' },
   { id: 'bbq', kicker: 'Evenings', title: 'Barbecue', body: 'Barbecue nights in the open air: something sizzling on the grill and the stars coming out.' },
   { id: 'pool', kicker: 'Unwind', title: 'Nature pool', body: 'Cool off in our nature pool, wrapped in greenery and birdsong.' },
   { id: 'games', kicker: 'For everyone', title: 'Indoor & outdoor games', body: 'Games for kids and grown-ups alike, indoors on a misty afternoon or out on the lawn.' },
@@ -138,9 +149,10 @@ window.PLACES = [
 /* --- Gallery (order = display order) --------------------------------------- */
 window.GALLERY = [
   { id: 'cottages-dusk', cap: 'The cottages at dusk', span: 'tall' },
-  { id: 'hills-view', cap: 'Hill views over the coffee estate', span: 'wide' },
-  { id: 'room-valley', cap: 'Valley View Room', span: 'wide' },
+  { id: 'hills-view', cap: 'Hill views over the coffee estate', span: '' },
   { id: 'restaurant', cap: 'The restaurant', span: 'tall' },
+  { id: 'room-valley', cap: 'Valley View Room', span: '' },
+  { id: 'campfire', cap: 'The campfire corner', span: 'tall' },
   { id: 'room-laterite', cap: 'Laterite Room', span: '' },
   { id: 'room-terracotta', cap: 'Terracotta Room', span: '' },
   { id: 'bath-leaf', cap: 'Private bathroom', span: '' },

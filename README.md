@@ -25,18 +25,29 @@ js/app.js         Vue app: rooms carousel, enquiry form, gallery lightbox,
 images/           photos (full size) and images/thumbs/ (small versions)
 ```
 
-## Things to fill in (js/data.js)
+## Contact details and enquiries (js/data.js)
 
-1. **Contact details** in `window.CONFIG`: `whatsapp` (digits with country code,
-   e.g. `919876543210`), `phone`, `email`, `address`, `mapsUrl`, `instagram`.
-   - With `whatsapp` set, the enquiry form gets a **Send on WhatsApp** button
-     that opens a pre-filled message with the guest's dates, guests and room.
-   - With `email` set, it gets **Send by email**.
-   - With neither, guests can only copy their enquiry text.
-2. **Room names and descriptions** in `window.ROOMS`. They are written from
-   the photos, so check that the names, bed types and features match.
-3. **Distances** for nearby places: set `distance: '45 min drive'` on any entry
-   in `window.PLACES` and it shows as a tag on that card.
+- `window.CONFIG.phones` holds the two numbers. Each has `display` (how it is
+  shown) and `number` (digits with the 91 country code, used for WhatsApp and
+  calls).
+- **Enquiries go to WhatsApp.** The form builds a message with the guest's
+  name, dates, number of guests, room and notes. Guests pick which number to
+  send it to (the first is the default).
+  - On a phone: **Send on WhatsApp** opens the WhatsApp app.
+  - On a laptop or desktop: **Send via WhatsApp Web** opens web.whatsapp.com,
+    and **Open WhatsApp app** hands over to the desktop app.
+- `lat` / `lng` place the map pin and the "Get directions" link; `mapsUrl` is
+  the "Open in Google Maps" link; `address` is the text shown under the logo.
+- Room names and descriptions are in `window.ROOMS` (written from the photos,
+  so check them), and the dormitory text is in `window.DORM`.
+- Set `distance: '45 min drive'` on any entry in `window.PLACES` to show it as
+  a tag on that nearby place.
+
+## Logo
+
+`images/logo.png` (512 px), `logo-192.png` and `logo-64.png` (favicon) were
+cleaned up from the photo you sent. If you have the original logo file, drop
+it in with the same names for a sharper result.
 
 ## Swapping photos
 

@@ -551,6 +551,23 @@
       c.add(t('g', { class: 'bob' }, raft));
     },
 
+    topo(c) {
+      c.add(t('rect', { width: W, height: H, fill: 'oklch(0.94 0.04 138)' }));
+      [[110, 70, 120, 70, 7], [312, 176, 130, 80, 8], [344, 34, 90, 50, 5], [44, 214, 90, 56, 5]].forEach(([x, y, rx, ry, n]) => {
+        for (let k = n; k >= 1; k--) {
+          const b = blob(x, y, (rx * k) / n, (ry * k) / n, c, 20, 0.16);
+          c.add(t('path', { d: b.d, fill: `oklch(${(0.93 - k * 0.0 - (n - k) * 0.018).toFixed(3)} 0.06 ${140 + k * 2})`, stroke: 'oklch(0.52 0.07 150)', 'stroke-width': 0.7, 'stroke-opacity': 0.45 }));
+        }
+      });
+      c.add(t('path', { d: 'M-10 214 C70 196 120 150 186 136 S300 104 410 64', stroke: 'oklch(0.74 0.08 222)', 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' }));
+      c.add(t('path', { d: 'M-10 214 C70 196 120 150 186 136 S300 104 410 64', stroke: 'oklch(0.86 0.06 215)', 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' }));
+      c.add(t('path', { d: 'M40 -10 C70 60 150 90 196 112 S250 190 236 262', stroke: 'oklch(0.97 0.02 90)', 'stroke-width': 3.2, fill: 'none', 'stroke-dasharray': '7 5', 'stroke-linecap': 'round' }));
+      c.add(t('ellipse', { cx: 200, cy: 124, rx: 10, ry: 4, fill: 'oklch(0.30 0.05 150)', opacity: 0.25 }));
+      c.add(t('circle', { cx: 200, cy: 124, r: 16, fill: 'none', stroke: 'oklch(0.50 0.14 33)', 'stroke-width': 1.5, class: 'ripple' }));
+      c.add(t('path', { d: 'M200 124 C196 114 186 108 186 98 A14 14 0 1 1 214 98 C214 108 204 114 200 124 Z', fill: 'oklch(0.50 0.14 33)' }));
+      c.add(t('circle', { cx: 200, cy: 98, r: 5.2, fill: '#fff' }));
+    },
+
     /* services */
     campfire(c) {
       sky(c, [[0, 'oklch(0.18 0.035 265)'], [0.68, 'oklch(0.26 0.05 300)'], [1, 'oklch(0.38 0.08 40)']]);

@@ -10,7 +10,8 @@
   <meta property="og:title" content="Coorg River Rest">
   <meta property="og:description" content="Fall asleep to the river. Wake up to the hills. A serene retreat in the coffee estates of Coorg.">
   <meta property="og:image" content="images/cottages-dusk.jpg">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23dcefd9'/%3E%3Cg fill='none' stroke='%232f6b3e' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M5 19C5 11 10.5 6 19 5c0 8.5-5.5 14-14 14'/%3E%3Cpath d='M5 19 13 11'/%3E%3C/g%3E%3Ccircle cx='17' cy='16' r='2.4' fill='%23b8432c'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" href="images/logo-64.png">
+  <link rel="apple-touch-icon" href="images/logo-192.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +44,12 @@
     "name": "Coorg River Rest",
     "description": "A serene riverside retreat nestled amid the coffee estates of Coorg, Karnataka.",
     "image": "images/cottages-dusk.jpg",
-    "address": { "@type": "PostalAddress", "addressRegion": "Karnataka", "addressLocality": "Kodagu (Coorg)", "addressCountry": "IN" },
+    "logo": "images/logo.png",
+    "telephone": ["+91 84312 46215", "+91 77603 55115"],
+    "address": { "@type": "PostalAddress", "streetAddress": "Near Brahmagiri Sports Club", "addressRegion": "Karnataka", "addressLocality": "Kodagu (Coorg)", "addressCountry": "IN" },
+    "geo": { "@type": "GeoCoordinates", "latitude": 11.991714477539062, "longitude": 76.0103530883789 },
+    "hasMap": "https://maps.google.com/maps/search/Brahmagiri%20Sports%20Club/@11.991714477539062,76.0103530883789,17z?hl=en",
+    "numberOfRooms": 7,
     "founder": [{ "@type": "Person", "name": "Shive Chokira" }, { "@type": "Person", "name": "Anthra Chokira" }],
     "amenityFeature": [
       { "@type": "LocationFeatureSpecification", "name": "Veg and non-veg restaurant", "value": true },
@@ -70,30 +76,30 @@
   <!-- Floating navigation (appears on scroll) -->
   <nav class="float-nav glass flex items-center gap-6" :class="{ 'is-on': scrolled }" aria-label="Quick navigation">
     <a href="#top" class="brand !text-base mr-auto">
-      <ui-icon name="leaf" :size="20" class="text-moss"></ui-icon>
+      <img src="images/logo-64.png" alt="" class="w-8 h-8">
       Coorg River Rest
     </a>
-    <div class="hidden lg:flex items-center gap-6">
+    <div class="hidden xl:flex items-center gap-6">
       <a v-for="l in links" :key="l.href" :href="l.href" class="nav-link" :class="{ '!text-laterite': active === l.href.slice(1) }">{{ l.label }}</a>
     </div>
     <button class="btn btn-primary btn-sm" @click="openEnquiry()">Enquire</button>
-    <button class="btn btn-icon lg:!hidden !w-9 !h-9" aria-label="Open menu" @click="menuOpen = true"><ui-icon name="menu" :size="18"></ui-icon></button>
+    <button class="btn btn-icon xl:!hidden !w-9 !h-9" aria-label="Open menu" @click="menuOpen = true"><ui-icon name="menu" :size="18"></ui-icon></button>
   </nav>
 
   <div class="wrap">
     <div class="inner">
 
       <!-- Header -->
-      <header class="flex items-center gap-6 pt-14 md:pt-16 pb-3">
+      <header class="flex items-center gap-4 sm:gap-6 pt-12 md:pt-14 pb-3">
         <a href="#top" class="brand mr-auto">
-          <ui-icon name="leaf" :size="22" class="text-moss"></ui-icon>
+          <img src="images/logo-192.png" alt="" class="w-12 h-12 md:w-14 md:h-14" style="filter: drop-shadow(0 4px 10px oklch(0.30 0.06 150 / .18))">
           Coorg River Rest
         </a>
-        <nav class="hidden lg:flex items-center gap-7" aria-label="Main">
+        <nav class="hidden xl:flex items-center gap-7" aria-label="Main">
           <a v-for="l in links" :key="l.href" :href="l.href" class="nav-link">{{ l.label }}</a>
         </nav>
         <button class="btn btn-outline hidden sm:inline-flex" @click="openEnquiry()">Enquire</button>
-        <button class="btn btn-icon lg:!hidden" aria-label="Open menu" @click="menuOpen = true"><ui-icon name="menu"></ui-icon></button>
+        <button class="btn btn-icon xl:!hidden" aria-label="Open menu" @click="menuOpen = true"><ui-icon name="menu"></ui-icon></button>
       </header>
 
       <!-- Hero -->
@@ -134,12 +140,8 @@
           <div class="arch absolute inset-0">
             <img src="images/cottages-dusk.jpg" alt="Red-brick cottages with tiled roofs along a brick path, at dusk" class="photo" style="object-position: 50% 60%" fetchpriority="high">
           </div>
-          <div class="absolute -top-4 -left-4 sm:-left-8 w-[104px] h-[104px] sm:w-[124px] sm:h-[124px] rounded-full glass grid place-items-center">
-            <svg viewBox="0 0 120 120" class="absolute inset-0 w-full h-full badge-spin" aria-hidden="true">
-              <defs><path id="badge-circle" d="M60 60 m-45 0 a45 45 0 1 1 90 0 a45 45 0 1 1 -90 0"></path></defs>
-              <text font-size="8.6" letter-spacing="1.55" fill="currentColor" class="text-moss" font-weight="500"><textPath href="#badge-circle">RELAX • REFRESH • RECONNECT WITH NATURE •</textPath></text>
-            </svg>
-            <ui-icon name="leaf" :size="26" class="text-laterite"></ui-icon>
+          <div class="absolute -top-6 -left-3 sm:-left-10 w-[112px] h-[112px] sm:w-[150px] sm:h-[150px] logo-float" style="filter: drop-shadow(0 14px 26px oklch(0.28 0.06 150 / .30))">
+            <img src="images/logo.png" alt="Coorg River Rest logo" class="w-full h-full">
           </div>
           <div class="absolute left-3 sm:-left-6 bottom-6 sm:bottom-8 glass rounded-xl px-4 py-3 flex items-center gap-3">
             <span class="w-9 h-9 rounded-full grid place-items-center text-white" style="background: linear-gradient(160deg, oklch(0.70 0.18 50), oklch(0.52 0.18 32))"><ui-icon name="flame" :size="18"></ui-icon></span>
@@ -198,6 +200,7 @@
           <div class="flex flex-col gap-3">
             <div class="eyebrow">Rooms</div>
             <h2 class="title-section">Rooms made for <span class="em">slow mornings</span></h2>
+            <p class="lead max-w-[56ch]">Six rooms and a dormitory, each with its own balcony looking out over the hills.</p>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-[13px] text-muted tabular-nums">{{ counter }}</span>
@@ -219,7 +222,7 @@
                 <div class="flex flex-col gap-5 p-6 sm:p-8 lg:p-12">
                   <div class="flex gap-2 flex-wrap">
                     <span class="tag">{{ room.tag }}</span>
-                    <span class="tag tag-outline">Room 0{{ i + 1 }}</span>
+                    <span class="tag tag-outline"><ui-icon name="mountains" :size="13"></ui-icon> Hill-view balcony</span>
                   </div>
                   <h3 class="text-[clamp(30px,3.2vw,44px)] tracking-[-0.03em]">{{ room.name }}</h3>
                   <p class="body max-w-[48ch]">{{ room.blurb }}</p>
@@ -255,18 +258,30 @@
           </button>
         </div>
 
-        <div class="mt-8 card p-4 sm:p-5 grid sm:grid-cols-[1fr_auto] gap-5 items-center reveal">
-          <div class="flex items-start gap-4">
-            <span class="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[oklch(0.89_0.045_145)] text-moss"><ui-icon name="drop"></ui-icon></span>
-            <div class="flex flex-col gap-1">
-              <span class="text-[17px] font-medium">Private bathrooms</span>
-              <span class="text-sm text-ink-2 max-w-[52ch]">Bright, tiled bathrooms with a shower, wash basin and fresh towels, each with its own botanical feature wall.</span>
+        <div class="mt-8 grid lg:grid-cols-[1.4fr_1fr] gap-4 reveal">
+          <div class="card p-4 sm:p-5 grid sm:grid-cols-[1fr_auto] gap-5 items-center">
+            <div class="flex items-start gap-4">
+              <span class="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[oklch(0.89_0.045_145)] text-moss"><ui-icon name="drop"></ui-icon></span>
+              <div class="flex flex-col gap-1">
+                <span class="text-[17px] font-medium">Private bathrooms</span>
+                <span class="text-sm text-ink-2 max-w-[48ch]">Bright, tiled bathrooms with a shower, wash basin and fresh towels, each with its own botanical feature wall.</span>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <button v-for="b in baths" :key="b.img" class="tile !rounded-xl flex-1 sm:flex-none h-[150px] sm:w-[100px] sm:h-[124px]" @click="openLightboxBySrc(b.img)" :aria-label="'View photo: ' + b.alt">
+                <img :src="b.thumb" :alt="b.alt" loading="lazy">
+              </button>
             </div>
           </div>
-          <div class="flex gap-3">
-            <button v-for="b in baths" :key="b.img" class="tile !rounded-xl flex-1 sm:flex-none h-[150px] sm:w-[110px] sm:h-[130px]" @click="openLightboxBySrc(b.img)" :aria-label="'View photo: ' + b.alt">
-              <img :src="b.thumb" :alt="b.alt" loading="lazy">
-            </button>
+          <div class="card p-5 sm:p-6 flex flex-col gap-4 justify-between">
+            <div class="flex items-start gap-4">
+              <span class="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[oklch(0.89_0.045_145)] text-moss"><ui-icon name="users"></ui-icon></span>
+              <div class="flex flex-col gap-1">
+                <span class="text-[17px] font-medium">{{ dorm.name }}</span>
+                <span class="text-sm text-ink-2 max-w-[44ch]">{{ dorm.body }}</span>
+              </div>
+            </div>
+            <button class="btn btn-outline self-start" @click="openEnquiry(dorm.id)">Enquire about the dormitory</button>
           </div>
         </div>
       </section>
@@ -291,7 +306,10 @@
             </div>
           </article>
           <article v-for="s in services" :key="s.id" class="card lift reveal">
-            <div class="h-44 relative overflow-hidden" v-html="s.art"></div>
+            <div class="h-44 relative overflow-hidden">
+              <img v-if="s.img" :src="s.img" :alt="s.alt" class="photo absolute inset-0" style="object-position: 60% 70%" loading="lazy">
+              <div v-else class="absolute inset-0" v-html="s.art"></div>
+            </div>
             <div class="flex flex-col gap-2 p-5 pb-6">
               <span class="card-kicker flex items-center gap-2"><ui-icon :name="s.icon" :size="14"></ui-icon>{{ s.kicker }}</span>
               <span class="card-title">{{ s.title }}</span>
@@ -378,6 +396,45 @@
         </div>
       </section>
 
+      <!-- Location -->
+      <section id="location" class="section">
+        <div class="flex flex-col gap-3 mb-8 max-w-[720px] reveal">
+          <div class="eyebrow">Getting here</div>
+          <h2 class="title-section">Find your way <span class="em">to the river</span></h2>
+        </div>
+        <div class="grid lg:grid-cols-[1.45fr_1fr] gap-4 lg:gap-5">
+          <div class="card relative min-h-[340px] lg:min-h-[460px] reveal">
+            <div class="absolute inset-0" v-html="topo"></div>
+            <!-- map-embed:start -->
+            <iframe class="absolute inset-0 w-full h-full border-0" :src="mapEmbed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map showing the location of Coorg River Rest" allowfullscreen></iframe>
+            <!-- map-embed:end -->
+          </div>
+          <div class="card p-6 sm:p-8 flex flex-col gap-6 reveal">
+            <div class="flex items-start gap-4">
+              <img src="images/logo-192.png" alt="" class="w-16 h-16 shrink-0">
+              <div class="flex flex-col gap-1 min-w-0">
+                <span class="text-[19px] font-medium">Coorg River Rest</span>
+                <span class="text-sm text-ink-2 leading-relaxed whitespace-pre-line">{{ config.address }}</span>
+                <span class="text-[12px] text-muted tabular-nums">{{ coords }}</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2.5">
+              <a :href="directionsUrl" target="_blank" rel="noopener" class="btn btn-primary"><ui-icon name="route" :size="18"></ui-icon> Get directions</a>
+              <a :href="config.mapsUrl" target="_blank" rel="noopener" class="btn btn-outline"><ui-icon name="pin" :size="18"></ui-icon> Open in Google Maps</a>
+            </div>
+            <ul class="flex flex-col">
+              <li v-for="(d, i) in directions" :key="d.title" class="flex gap-4 py-4" :class="{ 'border-t border-line': i > 0 }">
+                <span class="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[oklch(0.89_0.045_145)] text-moss"><ui-icon :name="d.icon"></ui-icon></span>
+                <span class="flex flex-col gap-1">
+                  <span class="text-[15px] font-medium">{{ d.title }}</span>
+                  <span class="text-sm text-ink-2 leading-relaxed">{{ d.body }}</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <!-- Tagline + contact -->
       <section id="contact" class="pb-10">
         <div class="night px-6 py-14 sm:px-12 sm:py-20 lg:px-20 reveal">
@@ -388,12 +445,16 @@
               <h2 class="text-[clamp(36px,5.2vw,72px)] leading-[1] tracking-[-0.035em] text-balance">Relax. Refresh. <span class="em">Reconnect with nature.</span></h2>
               <p class="text-[16px] leading-relaxed text-white/75 max-w-[48ch]">Tell us your dates and we’ll get back to you with availability and rates.</p>
             </div>
-            <div class="flex flex-col gap-3 lg:items-end">
-              <button class="btn btn-light !min-h-[50px] !px-7 !text-[15px]" @click="openEnquiry()"><ui-icon name="calendar" :size="18"></ui-icon> Send an enquiry</button>
-              <div class="flex flex-wrap gap-3 lg:justify-end">
-                <a v-if="reach.whatsapp" :href="reach.whatsapp" target="_blank" rel="noopener" class="btn btn-on-dark"><ui-icon name="whatsapp" :size="18"></ui-icon> WhatsApp</a>
-                <a v-if="reach.tel" :href="reach.tel" class="btn btn-on-dark"><ui-icon name="phone" :size="18"></ui-icon> {{ config.phone }}</a>
-                <a v-if="reach.mail" :href="reach.mail" class="btn btn-on-dark"><ui-icon name="mail" :size="18"></ui-icon> Email us</a>
+            <div class="flex flex-col gap-4 lg:items-end">
+              <button class="btn btn-light !min-h-[50px] !px-7 !text-[15px]" @click="openEnquiry()"><ui-icon name="whatsapp" :size="19"></ui-icon> Enquire on WhatsApp</button>
+              <div class="flex flex-col gap-2 w-full lg:max-w-[340px]">
+                <div v-for="(p, i) in phones" :key="p.number" class="flex items-center justify-between gap-3 rounded-full pl-5 pr-1.5 py-1.5 border border-white/15 bg-white/5">
+                  <span class="text-[15px] tabular-nums select-all">{{ p.display }}</span>
+                  <span class="flex gap-1.5">
+                    <a :href="'tel:+' + p.number" class="lb-btn !w-10 !h-10" :aria-label="'Call ' + p.display"><ui-icon name="phone" :size="18"></ui-icon></a>
+                    <button class="lb-btn !w-10 !h-10" :aria-label="'Send an enquiry on WhatsApp to ' + p.display" @click="openEnquiry(null, i)"><ui-icon name="whatsapp" :size="18"></ui-icon></button>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -403,20 +464,21 @@
       <!-- Footer -->
       <footer class="relative pt-10 pb-36 grid sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
         <div class="flex flex-col gap-3">
-          <a href="#top" class="brand"><ui-icon name="leaf" :size="22" class="text-moss"></ui-icon> Coorg River Rest</a>
+          <a href="#top" class="brand"><img src="images/logo-192.png" alt="" class="w-16 h-16"> Coorg River Rest</a>
           <p class="text-sm text-ink-2 leading-relaxed max-w-[34ch]">A serene riverside retreat amid the coffee estates of Coorg. Relax, refresh and reconnect with nature.</p>
         </div>
         <div class="flex flex-col gap-3">
           <span class="text-[11px] tracking-[.12em] uppercase text-moss font-medium">Find us</span>
           <span class="text-sm text-ink-2 leading-relaxed whitespace-pre-line">{{ config.address || config.location }}</span>
-          <a v-if="config.mapsUrl" :href="config.mapsUrl" target="_blank" rel="noopener" class="text-sm text-laterite inline-flex items-center gap-1.5"><ui-icon name="pin" :size="16"></ui-icon> Open in Google Maps</a>
+          <a :href="directionsUrl" target="_blank" rel="noopener" class="text-sm text-laterite inline-flex items-center gap-1.5 no-underline"><ui-icon name="route" :size="16"></ui-icon> Get directions</a>
+          <a v-if="config.mapsUrl" :href="config.mapsUrl" target="_blank" rel="noopener" class="text-sm text-laterite inline-flex items-center gap-1.5 no-underline"><ui-icon name="pin" :size="16"></ui-icon> Open in Google Maps</a>
         </div>
         <div class="flex flex-col gap-3">
           <span class="text-[11px] tracking-[.12em] uppercase text-moss font-medium">Contact</span>
-          <a v-if="config.phone" :href="reach.tel" class="text-sm text-ink-2 hover:text-laterite no-underline">{{ config.phone }}</a>
+          <a v-for="p in phones" :key="p.number" :href="'tel:+' + p.number" class="text-sm text-ink-2 hover:text-laterite no-underline inline-flex items-center gap-1.5 tabular-nums"><ui-icon name="phone" :size="15"></ui-icon>{{ p.display }}</a>
           <a v-if="config.email" :href="'mailto:' + config.email" class="text-sm text-ink-2 hover:text-laterite no-underline">{{ config.email }}</a>
           <a v-if="config.instagram" :href="config.instagram" target="_blank" rel="noopener" class="text-sm text-ink-2 hover:text-laterite inline-flex items-center gap-1.5 no-underline"><ui-icon name="instagram" :size="16"></ui-icon> Instagram</a>
-          <button class="text-sm text-laterite text-left inline-flex items-center gap-1.5 cursor-pointer" @click="openEnquiry()"><ui-icon name="calendar" :size="16"></ui-icon> Send an enquiry</button>
+          <button class="text-sm text-laterite text-left inline-flex items-center gap-1.5 cursor-pointer" @click="openEnquiry()"><ui-icon name="whatsapp" :size="16"></ui-icon> Enquire on WhatsApp</button>
         </div>
         <div class="flex flex-col gap-3">
           <span class="text-[11px] tracking-[.12em] uppercase text-moss font-medium">Explore</span>
@@ -432,74 +494,98 @@
 
   <div class="garland garland-bottom" v-html="vines.bottom"></div>
 
+  <!-- Floating WhatsApp button -->
+  <button v-show="scrolled && !dialogOpen && !menuOpen && lb < 0" class="wa-fab" aria-label="Enquire on WhatsApp" @click="openEnquiry()"><ui-icon name="whatsapp" :size="28"></ui-icon></button>
+
   <!-- Mobile menu -->
   <div v-if="menuOpen" class="menu-sheet" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="flex items-center justify-between">
-      <span class="brand"><ui-icon name="leaf" :size="22" class="text-moss"></ui-icon> Coorg River Rest</span>
+      <span class="brand"><img src="images/logo-64.png" alt="" class="w-10 h-10"> Coorg River Rest</span>
       <button class="btn btn-icon" aria-label="Close menu" @click="menuOpen = false"><ui-icon name="close"></ui-icon></button>
     </div>
     <nav class="flex flex-col mt-10" aria-label="Mobile">
       <a v-for="l in links" :key="l.href" :href="l.href" class="big" @click="menuOpen = false">{{ l.label }}</a>
     </nav>
-    <button class="btn btn-primary mt-auto !min-h-[50px]" @click="menuOpen = false; openEnquiry()">Send an enquiry</button>
+    <div class="mt-auto flex flex-col gap-3">
+      <div class="flex flex-wrap gap-x-5 gap-y-2 text-[15px]">
+        <a v-for="p in phones" :key="p.number" :href="'tel:+' + p.number" class="inline-flex items-center gap-2 no-underline text-ink tabular-nums"><ui-icon name="phone" :size="16" class="text-moss"></ui-icon>{{ p.display }}</a>
+      </div>
+      <button class="btn btn-primary !min-h-[50px]" @click="menuOpen = false; openEnquiry()"><ui-icon name="whatsapp" :size="18"></ui-icon> Enquire on WhatsApp</button>
+    </div>
   </div>
 
   <!-- Enquiry dialog -->
   <div v-if="dialogOpen" class="overlay" @click.self="closeEnquiry">
-    <div class="dialog flex flex-col gap-5" role="dialog" aria-modal="true" aria-labelledby="enq-title">
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex flex-col gap-1.5">
-          <span class="text-[11px] tracking-[.12em] uppercase text-moss font-medium">Plan your stay</span>
-          <span id="enq-title" class="text-[26px] tracking-[-0.02em] font-medium leading-tight">Send us an enquiry</span>
+    <div class="dialog flex flex-col !p-0 !overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="enq-title">
+      <div class="flex-1 min-h-0 overflow-y-auto overscroll-contain flex flex-col gap-4 sm:gap-5 px-5 pt-5 pb-4 sm:px-[30px] sm:pt-[30px]">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex flex-col gap-1.5">
+            <span class="text-[11px] tracking-[.12em] uppercase text-moss font-medium">Plan your stay</span>
+            <span id="enq-title" class="text-[24px] sm:text-[26px] tracking-[-0.02em] font-medium leading-tight">Send us an enquiry</span>
+          </div>
+          <button class="btn btn-icon !w-9 !h-9 shrink-0" aria-label="Close" @click="closeEnquiry"><ui-icon name="close" :size="18"></ui-icon></button>
         </div>
-        <button class="btn btn-icon !w-9 !h-9 shrink-0" aria-label="Close" @click="closeEnquiry"><ui-icon name="close" :size="18"></ui-icon></button>
-      </div>
 
-      <div class="grid grid-cols-2 gap-3">
-        <div class="field col-span-2">
-          <label for="enq-name">Your name</label>
-          <input id="enq-name" ref="nameInput" class="input" type="text" v-model.trim="booking.name" autocomplete="name" placeholder="Full name">
-        </div>
-        <div class="field">
-          <label for="enq-ci">Check-in</label>
-          <input id="enq-ci" class="input" type="date" v-model="booking.checkIn" :min="minDate">
-        </div>
-        <div class="field">
-          <label for="enq-co">Check-out</label>
-          <input id="enq-co" class="input" type="date" v-model="booking.checkOut" :min="minCheckOut">
-        </div>
-        <div class="field">
-          <span class="label" id="enq-guests">Guests</span>
-          <div class="stepper" role="group" aria-labelledby="enq-guests">
-            <button type="button" aria-label="Fewer guests" :disabled="booking.guests <= 1" @click="booking.guests--">−</button>
-            <output>{{ booking.guests }}</output>
-            <button type="button" aria-label="More guests" :disabled="booking.guests >= 20" @click="booking.guests++">+</button>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="field col-span-2">
+            <label for="enq-name">Your name</label>
+            <input id="enq-name" ref="nameInput" class="input" type="text" v-model.trim="booking.name" autocomplete="name" placeholder="Full name">
+          </div>
+          <div class="field">
+            <label for="enq-ci">Check-in</label>
+            <input id="enq-ci" class="input" type="date" v-model="booking.checkIn" :min="minDate">
+          </div>
+          <div class="field">
+            <label for="enq-co">Check-out</label>
+            <input id="enq-co" class="input" type="date" v-model="booking.checkOut" :min="minCheckOut">
+          </div>
+          <div class="field">
+            <span class="label" id="enq-guests">Guests</span>
+            <div class="stepper" role="group" aria-labelledby="enq-guests">
+              <button type="button" aria-label="Fewer guests" :disabled="booking.guests <= 1" @click="booking.guests--">−</button>
+              <output>{{ booking.guests }}</output>
+              <button type="button" aria-label="More guests" :disabled="booking.guests >= 20" @click="booking.guests++">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="enq-room">Room</label>
+            <select id="enq-room" class="input" v-model="booking.room">
+              <option value="">No preference</option>
+              <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
+              <option :value="dorm.id">{{ dorm.name }}</option>
+            </select>
+          </div>
+          <div class="field col-span-2">
+            <label for="enq-msg">Anything we should know? <span class="text-muted/70">(optional)</span></label>
+            <textarea id="enq-msg" class="input max-sm:!min-h-[64px]" v-model="booking.message" placeholder="Celebrations, meal preferences, arrival time…"></textarea>
           </div>
         </div>
-        <div class="field">
-          <label for="enq-room">Room</label>
-          <select id="enq-room" class="input" v-model="booking.room">
-            <option value="">No preference</option>
-            <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
-          </select>
-        </div>
-        <div class="field col-span-2">
-          <label for="enq-msg">Anything we should know? <span class="text-muted/70">(optional)</span></label>
-          <textarea id="enq-msg" class="input" v-model="booking.message" placeholder="Celebrations, meal preferences, arrival time…"></textarea>
+
+        <div class="flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-surface-2 text-sm">
+          <span class="text-ink-2">{{ dateRange }}</span>
+          <span class="font-medium text-right">{{ nightsLabel }} · {{ booking.guests }} {{ booking.guests === 1 ? 'guest' : 'guests' }}</span>
         </div>
       </div>
 
-      <div class="flex items-center justify-between rounded-xl px-4 py-3 bg-surface-2 text-sm">
-        <span class="text-ink-2">{{ dateRange }}</span>
-        <span class="font-medium">{{ nightsLabel }} · {{ booking.guests }} {{ booking.guests === 1 ? 'guest' : 'guests' }}</span>
+      <div class="shrink-0 flex flex-col gap-3 px-5 pt-4 pb-5 sm:px-[30px] sm:pb-[26px] border-t border-line bg-surface">
+        <div v-if="phones.length > 1" class="field">
+          <span class="label" id="enq-to">Send to</span>
+          <div class="seg" role="radiogroup" aria-labelledby="enq-to">
+            <label v-for="(p, i) in phones" :key="p.number" class="seg-opt" :class="{ 'is-on': waIndex === i }">
+              <input type="radio" name="enq-to" class="sr-only" :value="i" v-model="waIndex">
+              <ui-icon name="whatsapp" :size="15" class="hidden sm:block"></ui-icon><span class="tabular-nums whitespace-nowrap">{{ p.display }}</span>
+            </label>
+          </div>
+        </div>
+        <div v-if="isMobile" class="flex">
+          <a :href="wa.app" target="_blank" rel="noopener" class="btn btn-primary w-full !min-h-[50px] !text-[15px]"><ui-icon name="whatsapp" :size="19"></ui-icon> Send on WhatsApp</a>
+        </div>
+        <div v-else class="flex flex-wrap items-center justify-end gap-2.5">
+          <a :href="wa.app" target="_blank" rel="noopener" class="btn btn-outline max-sm:w-full">Open WhatsApp app</a>
+          <a :href="wa.web" target="_blank" rel="noopener" class="btn btn-primary max-sm:w-full"><ui-icon name="whatsapp" :size="18"></ui-icon> Send via WhatsApp Web</a>
+        </div>
+        <p class="text-[12.5px] sm:text-[13px] text-muted leading-relaxed">WhatsApp opens with your message ready. Press send there to reach us, or call <span class="tabular-nums whitespace-nowrap">{{ phones[0] && phones[0].display }}</span><template v-if="phones[1]"> or <span class="tabular-nums whitespace-nowrap">{{ phones[1].display }}</span></template>.</p>
       </div>
-
-      <div class="flex flex-wrap items-center justify-end gap-2.5">
-        <button class="btn btn-quiet max-sm:w-full order-last sm:order-first sm:mr-auto" @click="copyEnquiry"><ui-icon :name="copied ? 'check' : 'copy'" :size="16"></ui-icon> {{ copied ? 'Copied' : 'Copy details' }}</button>
-        <a v-if="reach.mail" :href="reach.mail" class="btn max-sm:w-full" :class="reach.whatsapp ? 'btn-outline' : 'btn-primary'"><ui-icon name="mail" :size="16"></ui-icon> Send by email</a>
-        <a v-if="reach.whatsapp" :href="reach.whatsapp" target="_blank" rel="noopener" class="btn btn-primary max-sm:w-full"><ui-icon name="whatsapp" :size="16"></ui-icon> Send on WhatsApp</a>
-      </div>
-      <p v-if="!reach.whatsapp && !reach.mail" class="text-[13px] text-muted -mt-2">Copy your details and send them to us.</p>
     </div>
   </div>
 

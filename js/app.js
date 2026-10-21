@@ -41,6 +41,8 @@
     access: '<circle cx="11" cy="4.6" r="1.8"/><path d="M11 7.6v6h5l2 5"/><path d="M8 10.6a6 6 0 1 0 7.6 8"/>',
     power: '<rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M22 10.5v3"/><path d="m11.6 8.6-2.6 3.9h4l-2.6 3.9"/>',
     signal: '<path d="M5 18v-2M9.5 18v-5M14 18v-8M18.5 18V6"/>',
+    users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/>',
+    route: '<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/>',
   };
 
   const UiIcon = {
@@ -77,6 +79,8 @@
 
       /* content */
       const rooms = window.ROOMS || [];
+      const dorm = window.DORM || { id: 'dorm', name: 'Dormitory', body: '' };
+      const phones = config.phones || [];
       const baths = window.BATHS || [];
       const serviceIcons = { campfire: 'flame', bbq: 'grill', pool: 'pool', games: 'games' };
       const services = (window.SERVICES || []).map((s, i) => ({ ...s, icon: serviceIcons[s.id] || 'leaf', art: ART.scene(s.id, 101 + i * 13) }));
@@ -90,11 +94,12 @@
         { href: '#gallery', label: 'Gallery' },
         { href: '#nearby', label: 'Nearby' },
         { href: '#rules', label: 'House rules' },
+        { href: '#location', label: 'Location' },
       ];
       const highlights = [
         { icon: 'river', title: 'Riverside', body: 'A flowing river wraps around the property.' },
         { icon: 'bean', title: 'Coffee estates', body: 'Set amid lush, sprawling coffee plantations.' },
-        { icon: 'mountains', title: 'Hill views', body: 'Open your door to misty mountain vistas.' },
+        { icon: 'mountains', title: 'Hill-view balconies', body: 'Every room and the dormitory has a balcony facing the hills.' },
         { icon: 'utensils', title: 'Veg & non-veg', body: 'Our own restaurant, right on site.' },
       ];
       const rules = [
@@ -132,7 +137,6 @@
       const dialogOpen = ref(false);
       const menuOpen = ref(false);
       const lb = ref(-1);
-      const copied = ref(false);
       const nameInput = ref(null);
       const carouselPaused = computed(() => hover.value || pageHidden.value || dialogOpen.value || menuOpen.value || lb.value >= 0);
 
@@ -152,7 +156,7 @@
       const nights = computed(() => Math.max(1, Math.round((parse(booking.checkOut) - parse(booking.checkIn)) / 864e5) || 1));
       const nightsLabel = computed(() => `${nights.value} ${nights.value === 1 ? 'night' : 'nights'}`);
       const dateRange = computed(() => `${fmtShort(booking.checkIn)} – ${fmtShort(booking.checkOut)}`);
-      const roomName = computed(() => (rooms.find((r) => r.id === booking.room) || {}).name || 'No preference');
+      const roomName = computed(() => ([...rooms, dorm].find((r) => r.id === booking.room) || {}).name || 'No preference');
 
       const enquiryText = computed(() => {
         const lines = [`Hello ${config.name || 'Coorg River Rest'}! I’d like to enquire about a stay.`, ''];
@@ -164,20 +168,37 @@
         if (booking.message.trim()) lines.push('', booking.message.trim());
         return lines.join('\n');
       });
-      const reach = computed(() => {
-        const digits = String(config.whatsapp || '').replace(/\D/g, '');
+      /* WhatsApp: the app on phones, WhatsApp Web (or the desktop app) on computers */
+      const isMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini|IEMobile/i.test(navigator.userAgent || '') ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const waIndex = ref(0);
+      const wa = computed(() => {
+        const num = String((phones[waIndex.value] || phones[0] || {}).number || '').replace(/\D/g, '');
+        const text = encodeURIComponent(enquiryText.value);
         return {
-          whatsapp: digits ? `https://wa.me/${digits}?text=${encodeURIComponent(enquiryText.value)}` : '',
-          mail: config.email ? `mailto:${config.email}?subject=${encodeURIComponent(`Stay enquiry · ${dateRange.value}`)}&body=${encodeURIComponent(enquiryText.value)}` : '',
-          tel: config.phone ? `tel:${String(config.phone).replace(/[^\d+]/g, '')}` : '',
+          app: `https://wa.me/${num}?text=${text}`,
+          web: `https://web.whatsapp.com/send?phone=${num}&text=${text}`,
         };
       });
 
+      /* location */
+      const lat = Number(config.lat), lng = Number(config.lng);
+      const hasGeo = Number.isFinite(lat) && Number.isFinite(lng);
+      const mapEmbed = hasGeo ? `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed` : '';
+      const directionsUrl = hasGeo ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}` : config.mapsUrl || '';
+      const coords = hasGeo ? `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E` : '';
+      const phoneList = phones.map((p) => p.display.replace(/ /g, '\u00a0')).join(' or ');
+      const directions = [
+        { icon: 'phone', title: 'Call us on the way', body: `Need help finding us? Call or WhatsApp ${phoneList}.` },
+        { icon: 'road', title: 'The last stretch', body: 'The road leading up to the cottage may not be fully concreted.' },
+        { icon: 'signal', title: 'Save our numbers first', body: 'Mobile signal can be limited near the property, so save our numbers before you set out.' },
+      ];
+
       let lastFocus = null;
-      function openEnquiry(roomId) {
+      function openEnquiry(roomId, phoneIdx) {
         if (typeof roomId === 'string') booking.room = roomId;
+        if (typeof phoneIdx === 'number' && phones[phoneIdx]) waIndex.value = phoneIdx;
         lastFocus = document.activeElement;
-        copied.value = false;
         dialogOpen.value = true;
         nextTick(() => nameInput.value && nameInput.value.focus());
       }
@@ -185,21 +206,6 @@
         dialogOpen.value = false;
         if (lastFocus && lastFocus.focus) lastFocus.focus();
       }
-      async function copyEnquiry() {
-        const text = enquiryText.value;
-        try {
-          await navigator.clipboard.writeText(text);
-        } catch (e) {
-          const ta = document.createElement('textarea');
-          ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
-          document.body.appendChild(ta); ta.select();
-          try { document.execCommand('copy'); } catch (_) { /* ignore */ }
-          ta.remove();
-        }
-        copied.value = true;
-        setTimeout(() => (copied.value = false), 2200);
-      }
-
       /* lightbox */
       const openLightbox = (i) => { lastFocus = document.activeElement; lb.value = i; };
       const openLightboxById = (id) => { const i = gallery.findIndex((g) => g.id === id); if (i >= 0) openLightbox(i); };
@@ -279,12 +285,15 @@
       });
 
       return {
-        config, rooms, baths, services, places, gallery, links, highlights, rules, notes, vines,
+        config, rooms, dorm, phones, baths, services, places, gallery, links, highlights, rules, notes, vines,
         fireflies: fireflies(),
+        topo: ART.scene('topo', 5),
+        mapEmbed, directionsUrl, coords, directions,
         year: new Date().getFullYear(),
         idx, hover, autoplay, go, next, prev, counter, carouselPaused,
-        booking, minDate, minCheckOut, nightsLabel, dateRange, reach,
-        dialogOpen, menuOpen, copied, nameInput, openEnquiry, closeEnquiry, copyEnquiry,
+        booking, minDate, minCheckOut, nightsLabel, dateRange,
+        isMobile, waIndex, wa,
+        dialogOpen, menuOpen, nameInput, openEnquiry, closeEnquiry,
         lb, openLightbox, openLightboxById, openLightboxBySrc, lbStep,
         onTouchStart, onTouchEnd, onLbTouchEnd,
         scrolled, active,
