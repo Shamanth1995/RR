@@ -14,7 +14,7 @@
 window.CONFIG = {
   name: 'Coorg River Rest',
   location: 'Coorg, Karnataka',
-  address: 'Near Brahmagiri Sports Club\nKodagu (Coorg), Karnataka',
+  address: 'Srimangala kutta kakoor post\nPonampet taluk Kodagu 571217',
   phones: [
     { display: '+91 84312 46215', number: '918431246215' },
     { display: '+91 77603 55115', number: '917760355115' },
